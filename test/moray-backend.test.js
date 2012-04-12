@@ -5,14 +5,6 @@ var test = require('tap').test,
     util = require('util'),
     async = require('async'),
     Factory = require('wf').Factory,
-    WorkflowRedisBackend = require('../lib/workflow-moray-backend');
-
-var test = require('tap').test,
-    uuid = require('node-uuid'),
-    SOCKET = '/tmp/.' + uuid(),
-    util = require('util'),
-    async = require('async'),
-    Factory = require('wf').Factory,
     WorkflowMorayBackend = require('../lib/workflow-moray-backend');
 
 var backend, factory;
@@ -26,7 +18,7 @@ var helper = require('./helper'),
 test('setup', function (t) {
   console.time('Moray Backend');
   backend = new WorkflowMorayBackend(config.backend.opts);
-  t.ok(backend, 'backend ok'); 
+  t.ok(backend, 'backend ok');
   backend.init(function () {
     t.ok(backend.client, 'backend client ok');
     factory = Factory(backend);
@@ -123,12 +115,118 @@ test('update workflow', function (t) {
 });
 
 
+test('create job', function (t) {
+  factory.job({
+    workflow: aWorkflow.uuid,
+    target: '/foo/bar',
+    params: {
+      a: '1',
+      b: '2'
+    }
+  }, function (err, job) {
+    t.ifError(err, 'create job error');
+    t.ok(job, 'create job ok');
+    t.ok(job.exec_after, 'job exec_after');
+    t.equal(job.execution, 'queued', 'job queued');
+    t.ok(job.uuid, 'job uuid');
+    t.ok(util.isArray(job.chain), 'job chain is array');
+    t.ok(util.isArray(job.onerror), 'job onerror is array');
+    t.ok(
+      (typeof (job.params) === 'object' && !util.isArray(job.params)),
+      'params ok');
+    aJob = job;
+    backend.getJobProperty(aJob.uuid, 'target', function (err, val) {
+      t.ifError(err, 'get job property error');
+      t.equal(val, '/foo/bar', 'property value ok');
+      t.end();
+    });
+  });
+});
+
+
+test('duplicated job target', function (t) {
+  factory.job({
+    workflow: aWorkflow.uuid,
+    target: '/foo/bar',
+    params: {
+      a: '1',
+      b: '2'
+    }
+  }, function (err, job) {
+    t.ok(err, 'duplicated job error');
+    t.end();
+  });
+});
+
+
+test('job with different params', function (t) {
+  factory.job({
+    workflow: aWorkflow.uuid,
+    target: '/foo/bar',
+    params: {
+      a: '2',
+      b: '1'
+    }
+  }, function (err, job) {
+    t.ifError(err, 'create job error');
+    t.ok(job, 'create job ok');
+    t.ok(job.exec_after);
+    t.equal(job.execution, 'queued');
+    t.ok(job.uuid);
+    t.ok(util.isArray(job.chain), 'job chain is array');
+    t.ok(util.isArray(job.onerror), 'job onerror is array');
+    t.ok(
+      (typeof (job.params) === 'object' && !util.isArray(job.params)),
+      'params ok');
+    anotherJob = job;
+    t.end();
+  });
+});
+
+
+test('next jobs', function (t) {
+  backend.nextJobs(0, 1, function (err, jobs) {
+    t.ifError(err, 'next jobs error');
+    t.equal(jobs.length, 2);
+    // TODO: sorting on moray is pending
+    // t.equal(jobs[0], aJob.uuid);
+    // t.equal(jobs[1], anotherJob.uuid);
+    t.end();
+  });
+});
+
+
+test('next queued job', function (t) {
+  var idx = 0;
+  backend.nextJob(function (err, job) {
+    t.ifError(err, 'next job error' + idx);
+    idx += 1;
+    t.ok(job, 'first queued job OK');
+    // TODO: sorting on moray is pending
+    // t.equal(aJob.uuid, job.uuid);
+    backend.nextJob(idx, function (err, job) {
+      t.ifError(err, 'next job error: ' + idx);
+      idx += 1;
+      t.ok(job, '2nd queued job OK');
+      // TODO: sorting on moray is pending
+      //t.notEqual(aJob.uuid, job.uuid);
+      backend.nextJob(idx, function (err, job) {
+        console.dir(job);
+        t.ifError(err, 'next job error: ' + idx);
+        t.equal(job, null, 'no more queued jobs');
+        t.end();
+      });
+    });
+  });
+});
+
+
 test('teardown', function (t) {
   async.forEach(['wf_workflows', 'wf_jobs', 'wf_runners'],
     function (bucket, cb) {
       backend._bucketExists(bucket, function (exists) {
         if (exists) {
-          backend.client.delBucket(bucket, function (err) {
+          return backend.client.delBucket(bucket, function (err) {
             t.ifError(err, 'Delete ' + bucket + ' bucket error');
             return cb(err);
           });
