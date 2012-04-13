@@ -209,9 +209,8 @@ test('next queued job', function (t) {
       idx += 1;
       t.ok(job, '2nd queued job OK');
       // TODO: sorting on moray is pending
-      //t.notEqual(aJob.uuid, job.uuid);
+      // t.notEqual(aJob.uuid, job.uuid);
       backend.nextJob(idx, function (err, job) {
-        console.dir(job);
         t.ifError(err, 'next job error: ' + idx);
         t.equal(job, null, 'no more queued jobs');
         t.end();
@@ -219,6 +218,61 @@ test('next queued job', function (t) {
     });
   });
 });
+
+
+// This is the procedure the backend is using for locking a job.
+// The test is just here to illustrate what will happen there.
+test('lock job', function (t) {
+  var theJob, jobETag;
+  backend.client.get('wf_jobs', aJob.uuid, function (err, meta, job) {
+    delete job.uuid;
+    theJob = job;
+    jobETag = meta.etag;
+    theJob.runner_id = runnerId;
+    theJob.execution = 'running';
+    backend.client.put('wf_jobs', aJob.uuid, theJob, {
+      etag: jobETag
+    }, function (err, meta) {
+      t.ifError(err, 'lock job error');
+      backend.client.put('wf_jobs', aJob.uuid, theJob, {
+        etag: jobETag
+      }, function (err, meta) {
+        t.ok(err, 'job not locked error');
+        // Undo for the next test
+        theJob.runner_id = null;
+        theJob.execution = 'queued';
+        backend.client.put('wf_jobs', aJob.uuid, theJob, function (err, meta) {
+          t.ifError(err, 'unlock job error');
+          t.end();
+        });
+      });
+    });
+  });
+});
+
+
+test('run job', function (t) {
+  backend.runJob(aJob.uuid, runnerId, function (err, job) {
+    t.ifError(err, 'run job error');
+    t.equal(job.runner_id, runnerId, 'run job runner');
+    t.equal(job.execution, 'running', 'run job status');
+    aJob = job;
+    backend.getRunnerJobs(runnerId, function (err, jobs) {
+      t.ifError(err, 'get runner jobs err');
+      t.equal(jobs.length, 1);
+      t.equal(jobs[0], aJob.uuid);
+      // If the job is running, it shouldn't be available for nextJob:
+      backend.nextJob(function (err, job) {
+        t.ifError(err, 'run job next error');
+        t.notEqual(aJob.uuid, job.uuid, 'run job next job');
+        t.end();
+      });
+    });
+  });
+});
+
+
+
 
 
 test('teardown', function (t) {
