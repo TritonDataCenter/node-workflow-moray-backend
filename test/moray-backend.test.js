@@ -426,6 +426,130 @@ test('idle runner', function (t) {
 });
 
 
+test('get workflows', function (t) {
+  backend.getWorkflows(function (err, workflows) {
+    t.ifError(err, 'get workflows error');
+    t.ok(workflows, 'workflows ok');
+    t.equal(workflows[0].uuid, aWorkflow.uuid, 'workflow uuid ok');
+    t.ok(util.isArray(workflows[0].chain), 'workflow chain ok');
+    t.ok(util.isArray(workflows[0].onerror), 'workflow onerror ok');
+    t.end();
+  });
+});
+
+
+test('get all jobs', function (t) {
+  backend.getJobs(function (err, jobs) {
+    t.ifError(err, 'get all jobs error');
+    t.ok(jobs, 'jobs ok');
+    t.ok(util.isArray(jobs[0].chain), 'jobs chain ok');
+    t.ok(util.isArray(jobs[0].onerror), 'jobs onerror ok');
+    t.ok(util.isArray(jobs[0].chain_results), 'jobs chain_results ok');
+    t.ok(
+      (typeof (jobs[0].params) === 'object' && !util.isArray(jobs[0].params)),
+      'job params ok');
+    t.equal(jobs.length, 2);
+    t.end();
+  });
+});
+
+
+test('get succeeded jobs', function (t) {
+  backend.getJobs('succeeded', function (err, jobs) {
+    t.ifError(err, 'get succeeded jobs error');
+    t.ok(jobs, 'jobs ok');
+    t.equal(jobs.length, 1);
+    t.equal(jobs[0].execution, 'succeeded');
+    t.ok(util.isArray(jobs[0].chain), 'jobs chain ok');
+    t.ok(util.isArray(jobs[0].onerror), 'jobs onerror ok');
+    t.ok(util.isArray(jobs[0].chain_results), 'jobs chain_results ok');
+    t.ok(
+      (typeof (jobs[0].params) === 'object' && !util.isArray(jobs[0].params)),
+      'job params ok');
+    t.end();
+  });
+});
+
+
+test('get queued jobs', function (t) {
+  backend.getJobs('queued', function (err, jobs) {
+    t.ifError(err, 'get queued jobs error');
+    t.ok(jobs, 'jobs ok');
+    t.equal(jobs.length, 1);
+    t.equal(jobs[0].execution, 'queued');
+    t.ok(util.isArray(jobs[0].chain), 'jobs chain ok');
+    t.ok(util.isArray(jobs[0].onerror), 'jobs onerror ok');
+    t.ok(util.isArray(jobs[0].chain_results), 'jobs chain_results ok');
+    t.ok(
+      (typeof (jobs[0].params) === 'object' && !util.isArray(jobs[0].params)),
+      'job params ok');
+    t.end();
+  });
+});
+
+
+test('add job info', function (t) {
+  t.test('to unexisting job', function (t) {
+    backend.addInfo(
+      uuid(),
+      {'10%': 'Task completed step one'},
+      function (err) {
+        t.ok(err);
+        t.equal(typeof (err), 'object');
+        t.equal(err.name, 'BackendResourceNotFoundError');
+        t.end();
+      });
+  });
+  t.test('to existing job without previous info', function (t) {
+    backend.addInfo(
+      aJob.uuid,
+      {'10%': 'Task completed step one'},
+      function (err) {
+        t.ifError(err);
+        t.end();
+      });
+  });
+  t.test('to existing job with previous info', function (t) {
+    backend.addInfo(
+      aJob.uuid,
+      {'20%': 'Task completed step two'},
+      function (err) {
+        t.ifError(err);
+        t.end();
+      });
+  });
+  t.end();
+});
+
+
+test('get job info', function (t) {
+  t.test('from unexisting job', function (t) {
+    backend.getInfo(
+      uuid(),
+      function (err, info) {
+        t.ok(err);
+        t.equal(typeof (err), 'object');
+        t.equal(err.name, 'BackendResourceNotFoundError');
+        t.end();
+      });
+  });
+  t.test('from existing job', function (t) {
+    backend.getInfo(
+      aJob.uuid,
+      function (err, info) {
+        t.ifError(err);
+        t.ok(info);
+        t.ok(util.isArray(info));
+        t.equal(info.length, 2);
+        t.equivalent({'10%': 'Task completed step one'}, info[0]);
+        t.equivalent({'20%': 'Task completed step two'}, info[1]);
+        t.end();
+      });
+  });
+  t.end();
+});
+
+
 test('teardown', function (t) {
   async.forEach(['wf_workflows', 'wf_jobs', 'wf_runners'],
     function (bucket, cb) {
