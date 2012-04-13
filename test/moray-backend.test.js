@@ -272,6 +272,79 @@ test('run job', function (t) {
 });
 
 
+test('update job', function (t) {
+  aJob.chain_results = [
+    {result: 'OK', error: ''},
+    {result: 'OK', error: ''}
+  ];
+
+  backend.updateJob(aJob, function (err, job) {
+    t.ifError(err, 'update job error');
+    t.equal(job.runner_id, runnerId, 'update job runner');
+    t.equal(job.execution, 'running', 'update job status');
+    t.ok(util.isArray(job.chain_results), 'chain_results is array');
+    t.equal(2, job.chain_results.length);
+    aJob = job;
+    t.end();
+  });
+});
+
+
+test('update job property', function (t) {
+  backend.updateJobProperty(aJob.uuid, 'target', '/foo/baz', function (err) {
+    t.ifError(err, 'update job property error');
+    backend.getJob(aJob.uuid, function (err, job) {
+      t.ifError(err, 'update property get job error');
+      t.equal(job.target, '/foo/baz');
+      t.end();
+    });
+  });
+});
+
+
+test('finish job', function (t) {
+  aJob.chain_results = [
+    {result: 'OK', error: ''},
+    {result: 'OK', error: ''},
+    {result: 'OK', error: ''},
+    {result: 'OK', error: ''}
+  ];
+
+  backend.finishJob(aJob, function (err, job) {
+    t.ifError(err, 'finish job error');
+    t.equivalent(job.chain_results, [
+      {result: 'OK', error: ''},
+      {result: 'OK', error: ''},
+      {result: 'OK', error: ''},
+      {result: 'OK', error: ''}
+    ], 'finish job results');
+    t.ok(!job.runner_id);
+    t.equal(job.execution, 'succeeded', 'finished job status');
+    aJob = job;
+    t.end();
+  });
+});
+
+
+test('re queue job', function (t) {
+  backend.runJob(anotherJob.uuid, runnerId, function (err, job) {
+    t.ifError(err, 're queue job run job error');
+    anotherJob.chain_results = JSON.stringify([
+      {success: true, error: ''}
+    ]);
+    backend.queueJob(anotherJob, function (err, job) {
+      t.ifError(err, 're queue job error');
+      t.ok(!job.runner_id, 're queue job runner');
+      t.equal(job.execution, 'queued', 're queue job status');
+      anotherJob = job;
+      t.end();
+    });
+  });
+});
+
+
+
+
 
 
 
