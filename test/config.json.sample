@@ -2,8 +2,7 @@
   "backend": {
     "module": "../lib/workflow-moray-backend",
     "opts": {
-      "port": 8080,
-      "host": "10.99.99.20",
+      "url": "http://127.0.0.1:8080",
       "connectTimeout": 1000
     }
   },
