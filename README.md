@@ -13,16 +13,15 @@ Add the following to the config file of your application using wf:
       "backend": {
         "module": "wf-moray-backend",
         "opts": {
-          "port": 8080,
-          "host": "127.0.0.1",
+          "url": "127.0.0.1:8080",
           "connectTimeout": 1000
         }
       }
     }
 
-Where `port` and `host` are obviously related to your redis server and `db` is
-the Redis Database you want to use. If your Moray server is password protected,
-add also `"password": "whatever"` to the configuration section above. 
+Where `url` is the url where moray server is listening.
+If your Moray server is password protected, add also `"password": "whatever"`
+to the configuration section above. 
 
 And that should be it. `wf` REST API and Runners should take care of
 properly loading the module on init.

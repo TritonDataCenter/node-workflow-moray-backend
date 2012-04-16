@@ -23,7 +23,24 @@ test('setup', function (t) {
     t.ok(backend.client, 'backend client ok');
     factory = Factory(backend);
     t.ok(factory, 'factory ok');
-    t.end();
+    async.forEach(['wf_workflows', 'wf_jobs', 'wf_runners'],
+      function (bucket, cb) {
+        backend._bucketExists(bucket, function (exists) {
+          if (exists) {
+            return backend.client.delBucket(bucket, function (err) {
+              t.ifError(err, 'Delete ' + bucket + ' bucket error');
+              return cb(err);
+            });
+          } else {
+            return cb(null);
+          }
+        });
+      }, function (err) {
+        t.ifError(err, 'Delete buckets error');
+        backend._createBuckets(function () {
+          t.end();
+        });
+      });
   });
 });
 
@@ -569,6 +586,5 @@ test('teardown', function (t) {
         console.timeEnd('Moray Backend');
         t.end();
       });
-
     });
 });
