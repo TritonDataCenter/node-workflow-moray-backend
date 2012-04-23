@@ -37,7 +37,8 @@ test('setup', function (t) {
         });
       }, function (err) {
         t.ifError(err, 'Delete buckets error');
-        backend._createBuckets(function () {
+        backend._createBuckets(function (err) {
+          t.ifError(err, 'Create buckets error');
           t.end();
         });
       });
@@ -141,6 +142,8 @@ test('create job', function (t) {
       b: '2'
     }
   }, function (err, job) {
+    console.dir(job);
+    console.dir(err);
     t.ifError(err, 'create job error');
     t.ok(job, 'create job ok');
     t.ok(job.exec_after, 'job exec_after');
@@ -205,9 +208,8 @@ test('next jobs', function (t) {
   backend.nextJobs(0, 1, function (err, jobs) {
     t.ifError(err, 'next jobs error');
     t.equal(jobs.length, 2);
-    // TODO: sorting on moray is pending
-    // t.equal(jobs[0], aJob.uuid);
-    // t.equal(jobs[1], anotherJob.uuid);
+    t.equal(jobs[0], aJob.uuid);
+    t.equal(jobs[1], anotherJob.uuid);
     t.end();
   });
 });
@@ -219,14 +221,12 @@ test('next queued job', function (t) {
     t.ifError(err, 'next job error' + idx);
     idx += 1;
     t.ok(job, 'first queued job OK');
-    // TODO: sorting on moray is pending
-    // t.equal(aJob.uuid, job.uuid);
+    t.equal(aJob.uuid, job.uuid);
     backend.nextJob(idx, function (err, job) {
       t.ifError(err, 'next job error: ' + idx);
       idx += 1;
       t.ok(job, '2nd queued job OK');
-      // TODO: sorting on moray is pending
-      // t.notEqual(aJob.uuid, job.uuid);
+      t.notEqual(aJob.uuid, job.uuid);
       backend.nextJob(idx, function (err, job) {
         t.ifError(err, 'next job error: ' + idx);
         t.equal(job, null, 'no more queued jobs');
