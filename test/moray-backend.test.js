@@ -142,8 +142,6 @@ test('create job', function (t) {
       b: '2'
     }
   }, function (err, job) {
-    console.dir(job);
-    console.dir(err);
     t.ifError(err, 'create job error');
     t.ok(job, 'create job ok');
     t.ok(job.exec_after, 'job exec_after');
