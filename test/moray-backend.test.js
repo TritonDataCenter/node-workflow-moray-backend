@@ -23,7 +23,7 @@ test('setup', function (t) {
     t.ok(backend.client, 'backend client ok');
     factory = Factory(backend);
     t.ok(factory, 'factory ok');
-    async.forEach(['wf_workflows', 'wf_jobs', 'wf_runners'],
+    async.forEach(['wf_workflows', 'wf_jobs', 'wf_runners', 'wf_jobs_info'],
       function (bucket, cb) {
         backend._bucketExists(bucket, function (exists) {
           if (exists) {
@@ -568,7 +568,7 @@ test('get job info', function (t) {
 
 
 test('teardown', function (t) {
-  async.forEach(['wf_workflows', 'wf_jobs', 'wf_runners'],
+  async.forEach(['wf_workflows', 'wf_jobs', 'wf_runners', 'wf_jobs_info'],
     function (bucket, cb) {
       backend._bucketExists(bucket, function (exists) {
         if (exists) {
