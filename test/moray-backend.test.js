@@ -203,7 +203,7 @@ test('job with different params', function (t) {
 
 
 test('next jobs', function (t) {
-  backend.nextJobs(0, 1, function (err, jobs) {
+  backend.nextJobs(0, 2, function (err, jobs) {
     t.ifError(err, 'next jobs error');
     t.equal(jobs.length, 2);
     t.equal(jobs[0], aJob.uuid);
