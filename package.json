@@ -2,7 +2,7 @@
   "author": "Pedro Palazón Candel <kusorbox@gmail.com> (http://www.joyent.com)",
   "name": "wf-moray-backend",
   "description": "A backend for wf built over Moray",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "homepage": "https://github.com/kusor/node-workflow-moray-backend",
   "repository": {
@@ -17,9 +17,9 @@
     "node": ">=0.6"
   },
   "dependencies": {
-    "bunyan": "0.8.0",
+    "bunyan": "0.10.0",
     "restify": "1.4.3",
-    "moray-client": "git+ssh://git@git.joyent.com:moray-client.git#415c8ba1a2619c41973923ba8364c661477e06cd",
+    "moray": "git+ssh://git@git.joyent.com:node-moray.git#4af3f443a8256783f1367e195942969b29e6b8fa",
     "async": "0.1.22",
     "node-uuid": "1.3.3",
     "wf": "~0.4.0"

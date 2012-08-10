@@ -105,10 +105,10 @@ test('get workflow', function (t) {
     backend.getWorkflow(aWorkflow.uuid, function (err, workflow) {
         t.ifError(err, 'get workflow error');
         t.ok(workflow, 'get workflow ok');
-        t.equivalent(workflow, aWorkflow);
+        t.equivalent(workflow, aWorkflow, 'workflow object equivalent');
         backend.getWorkflow(uuid(), function (err, workflow) {
-            t.equal(typeof (err), 'object');
-            t.equal(err.name, 'BackendResourceNotFoundError');
+            t.equal(typeof (err), 'object', 'err is an object');
+            t.equal(err.name, 'BackendResourceNotFoundError', 'err name');
             t.ok(err.message.match(/uuid/gi), 'unexisting workflow error');
             t.end();
         });
@@ -240,25 +240,26 @@ test('next queued job', function (t) {
 // The test is just here to illustrate what will happen there.
 test('lock job', function (t) {
     var theJob, jobETag;
-    backend.client.get('wf_jobs', aJob.uuid, function (err, meta, job) {
+    backend.client.getObject('wf_jobs', aJob.uuid, function (err, obj) {
+        var job = obj.value;
         delete job.uuid;
         theJob = job;
-        jobETag = meta.etag;
+        jobETag = obj._etag;
         theJob.runner_id = runnerId;
         theJob.execution = 'running';
-        backend.client.put('wf_jobs', aJob.uuid, theJob, {
+        backend.client.putObject('wf_jobs', aJob.uuid, theJob, {
             etag: jobETag
-        }, function (err, meta) {
+        }, function (err) {
             t.ifError(err, 'lock job error');
-            backend.client.put('wf_jobs', aJob.uuid, theJob, {
+            backend.client.putObject('wf_jobs', aJob.uuid, theJob, {
                 etag: jobETag
-            }, function (err, meta) {
+            }, function (err) {
                 t.ok(err, 'job not locked error');
                 // Undo for the next test
                 theJob.runner_id = null;
                 theJob.execution = 'queued';
-                backend.client.put('wf_jobs', aJob.uuid, theJob,
-                  function (err, meta) {
+                backend.client.putObject('wf_jobs', aJob.uuid, theJob,
+                  function (err) {
                     t.ifError(err, 'unlock job error');
                     t.end();
                 });

@@ -2,7 +2,7 @@
     "backend": {
         "module": "../lib/workflow-moray-backend",
         "opts": {
-            "url": "http://127.0.0.1:8080",
+            "url": "http://10.99.99.13:2020",
             "connectTimeout": 1000
         }
     },
