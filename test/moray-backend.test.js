@@ -1,7 +1,6 @@
 // Copyright (c) 2012, Joyent, Inc. All rights reserved.
 var test = require('tap').test,
     uuid = require('node-uuid'),
-    SOCKET = '/tmp/.' + uuid(),
     util = require('util'),
     async = require('async'),
     Factory = require('wf').Factory,
