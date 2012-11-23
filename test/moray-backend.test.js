@@ -16,7 +16,7 @@ var helper = require('./helper'),
 
 test('setup', function (t) {
     console.time('Moray Backend');
-    backend = new WorkflowMorayBackend(config.backend.opts);
+    backend = WorkflowMorayBackend(config.backend.opts);
     t.ok(backend, 'backend ok');
     backend.init(function () {
         t.ok(backend.client, 'backend client ok');
