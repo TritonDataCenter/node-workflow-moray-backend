@@ -21,7 +21,7 @@
     "moray": "git+ssh://git@git.joyent.com:node-moray.git#b6f1d12",
     "async": "0.1.22",
     "node-uuid": "1.4.0",
-    "wf": "git://github.com/kusor/node-workflow.git#master"
+    "wf": "git://github.com/kusor/node-workflow.git#278bf0e"
   },
   "devDependencies": {
     "tap": "~0.3"
