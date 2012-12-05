@@ -46,6 +46,13 @@ test('setup', function (t) {
 });
 
 
+test('ping', function (t) {
+    backend.ping(function (err) {
+        t.ifError(err, 'backend ping error');
+        t.end();
+    });
+});
+
 test('add a workflow', function (t) {
     factory.workflow({
         name: 'A workflow',
