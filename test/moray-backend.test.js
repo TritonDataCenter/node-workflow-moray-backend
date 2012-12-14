@@ -91,6 +91,9 @@ test('workflow name must be unique', function (t) {
             retry: 3,
             body: function (job, cb) {
                 return cb(null);
+            },
+            modules:  {
+                'uuid': 'node-uuid'
             }
         }],
         timeout: 180,
