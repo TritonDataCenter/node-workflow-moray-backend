@@ -18,10 +18,10 @@
   },
   "dependencies": {
     "bunyan": "0.18.3",
-    "moray": "git+ssh://git@git.joyent.com:node-moray.git#de9ba8",
+    "moray": "git+ssh://git@git.joyent.com:node-moray.git#64f4c98ff534a2dec53ce0886cb9ce82b19aca50",
     "async": "0.1.22",
     "node-uuid": "1.4.0",
-    "wf": "git://github.com/kusor/node-workflow.git#038c35"
+    "wf": "git://github.com/kusor/node-workflow.git#038c358b4c816e5911e705311826cd77d504b267"
   },
   "devDependencies": {
     "tap": "~0.3"
