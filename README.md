@@ -31,6 +31,57 @@ properly loading the module on init.
 
 See [node-workflow issues](https://github.com/kusor/node-workflow/issues).
 
+
+# Testing
+
+### Setup a `moray_test` db from manatee zone:
+
+    [root@headnode (coal) ~]# sdc-login manatee
+    [root@... (coal:manatee0) ~]# createdb -U postgres moray_test
+    [root@... (coal:manatee0) ~]# psql -U postgres moray_test
+    moray_test=# CREATE TABLE buckets_config (
+        name text PRIMARY KEY,
+        index text NOT NULL,
+        pre text NOT NULL,
+        post text NOT NULL,
+        options text,
+        mtime timestamp without time zone DEFAULT now() NOT NULL
+    );
+
+
+### Boot another moray instance pointing to the `moray_test` db:
+
+    [root@headnode (coal) ~] sdc-login moray
+    [root@... (coal:moray0) ~]# cd /opt/smartdc/moray/
+    [root@... (coal:moray0) /opt/smartdc/moray]# cp etc/config.json etc/config.test.json
+    [root@... (coal:moray0) /opt/smartdc/moray]# cp smf/manifests/moray.xml smf/manifests/moray-test.xml
+
+Then, you need to modify SMF to make this moray test instance to use our `moray_test` db
+and listen into a different port:
+
+0. Change service name from `moray` to `moray-test` at the very top of the manifest:
+
+    <?xml version="1.0"?>
+    <!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
+    <service_bundle type="manifest" name="smartdc-moray-test">
+        <service name="smartdc/application/moray-test" type="service" version="1">
+
+1. Make sure the `start` method `exec` attribute has the following value:
+
+    exec="node main.js -f etc/config.json -p 2222 &amp;"
+
+2. Add `MORAY_DB_NAME` to the `start` method environment:
+
+    <envvar name="MORAY_DB_NAME" value="moray_test" />
+
+3. Import the new service:
+
+    svccfg import smf/manifests/moray-test.xml
+
+You should have a new moray instance running at the moray zone on port 2222 now. For
+COAL this means your moray URL will be `http://10.99.99.17:2222`.
+
+
 # LICENSE
 
 The MIT License (MIT) Copyright (c) 2012 Pedro Palazón Candel
