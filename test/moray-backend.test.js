@@ -157,10 +157,10 @@ test('create job', function (t) {
         t.ok(job.exec_after, 'job exec_after');
         t.equal(job.execution, 'queued', 'job queued');
         t.ok(job.uuid, 'job uuid');
-        t.ok(util.isArray(job.chain), 'job chain is array');
-        t.ok(util.isArray(job.onerror), 'job onerror is array');
+        t.ok(Array.isArray(job.chain), 'job chain is array');
+        t.ok(Array.isArray(job.onerror), 'job onerror is array');
         t.ok(
-          (typeof (job.params) === 'object' && !util.isArray(job.params)),
+          (typeof (job.params) === 'object' && !Array.isArray(job.params)),
           'params ok');
         aJob = job;
         backend.getJobProperty(aJob.uuid, 'target', function (err, val) {
@@ -201,10 +201,10 @@ test('job with different params', function (t) {
         t.ok(job.exec_after);
         t.equal(job.execution, 'queued');
         t.ok(job.uuid);
-        t.ok(util.isArray(job.chain), 'job chain is array');
-        t.ok(util.isArray(job.onerror), 'job onerror is array');
+        t.ok(Array.isArray(job.chain), 'job chain is array');
+        t.ok(Array.isArray(job.onerror), 'job onerror is array');
         t.ok(
-          (typeof (job.params) === 'object' && !util.isArray(job.params)),
+          (typeof (job.params) === 'object' && !Array.isArray(job.params)),
           'params ok');
         anotherJob = job;
         t.end();
@@ -309,7 +309,7 @@ test('update job', function (t) {
         t.ifError(err, 'update job error');
         t.equal(job.runner_id, runnerId, 'update job runner');
         t.equal(job.execution, 'running', 'update job status');
-        t.ok(util.isArray(job.chain_results), 'chain_results is array');
+        t.ok(Array.isArray(job.chain_results), 'chain_results is array');
         t.equal(2, job.chain_results.length);
         aJob = job;
         t.end();
@@ -460,8 +460,8 @@ test('get workflows', function (t) {
         t.ifError(err, 'get workflows error');
         t.ok(workflows, 'workflows ok');
         t.equal(workflows[0].uuid, aWorkflow.uuid, 'workflow uuid ok');
-        t.ok(util.isArray(workflows[0].chain), 'workflow chain ok');
-        t.ok(util.isArray(workflows[0].onerror), 'workflow onerror ok');
+        t.ok(Array.isArray(workflows[0].chain), 'workflow chain ok');
+        t.ok(Array.isArray(workflows[0].onerror), 'workflow onerror ok');
         t.end();
     });
 });
@@ -471,12 +471,12 @@ test('get all jobs', function (t) {
     backend.getJobs(function (err, jobs) {
         t.ifError(err, 'get all jobs error');
         t.ok(jobs, 'jobs ok');
-        t.ok(util.isArray(jobs[0].chain), 'jobs chain ok');
-        t.ok(util.isArray(jobs[0].onerror), 'jobs onerror ok');
-        t.ok(util.isArray(jobs[0].chain_results), 'jobs chain_results ok');
+        t.equal(typeof (jobs[0].chain), 'undefined', 'jobs chain ok');
+        t.ok(!jobs[0].onerror, 'jobs onerror ok');
+        t.ok(Array.isArray(jobs[0].chain_results), 'jobs chain_results ok');
         t.ok(
           (typeof (jobs[0].params) === 'object' &&
-           !util.isArray(jobs[0].params)),
+           !Array.isArray(jobs[0].params)),
           'job params ok');
         t.equal(jobs.length, 2);
         t.end();
@@ -510,12 +510,12 @@ test('get succeeded jobs', function (t) {
         t.ok(jobs, 'jobs ok');
         t.equal(jobs.length, 1);
         t.equal(jobs[0].execution, 'succeeded');
-        t.ok(util.isArray(jobs[0].chain), 'jobs chain ok');
-        t.ok(util.isArray(jobs[0].onerror), 'jobs onerror ok');
-        t.ok(util.isArray(jobs[0].chain_results), 'jobs chain_results ok');
+        t.ok(!jobs[0].chain, 'jobs chain ok');
+        t.ok(!jobs[0].onerror, 'jobs onerror ok');
+        t.ok(Array.isArray(jobs[0].chain_results), 'jobs chain_results ok');
         t.ok(
           (typeof (jobs[0].params) === 'object' &&
-           !util.isArray(jobs[0].params)),
+           !Array.isArray(jobs[0].params)),
           'job params ok');
         t.end();
     });
@@ -538,12 +538,12 @@ test('get queued jobs', function (t) {
         t.ok(jobs, 'jobs ok');
         t.equal(jobs.length, 1);
         t.equal(jobs[0].execution, 'queued');
-        t.ok(util.isArray(jobs[0].chain), 'jobs chain ok');
-        t.ok(util.isArray(jobs[0].onerror), 'jobs onerror ok');
-        t.ok(util.isArray(jobs[0].chain_results), 'jobs chain_results ok');
+        t.ok(!jobs[0].chain, 'jobs chain ok');
+        t.ok(!jobs[0].onerror, 'jobs onerror ok');
+        t.ok(Array.isArray(jobs[0].chain_results), 'jobs chain_results ok');
         t.ok(
           (typeof (jobs[0].params) === 'object' &&
-           !util.isArray(jobs[0].params)),
+           !Array.isArray(jobs[0].params)),
           'job params ok');
         t.end();
     });
@@ -601,7 +601,7 @@ test('get job info', function (t) {
             function (err, info) {
                 t.ifError(err);
                 t.ok(info);
-                t.ok(util.isArray(info));
+                t.ok(Array.isArray(info));
                 t.equal(info.length, 2);
                 t.equivalent({'10%': 'Task completed step one'}, info[0]);
                 t.equivalent({'20%': 'Task completed step two'}, info[1]);
