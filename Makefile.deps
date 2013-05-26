@@ -30,21 +30,6 @@ deps/jsstyle/jsstyle:
 	git submodule update --init deps/jsstyle
 
 #
-# restdown
-#
-RESTDOWN	= python deps/restdown/bin/restdown
-
-$(RESTDOWN): | deps/restdown/.git
-
-deps/restdown/.git:
-	git submodule update --init deps/restdown
-
-#
-# The restdown submodule should be updated before we build "docs".
-#
-docs: $(RESTDOWN)
-
-#
 # JSL and JSSTYLE must be around before we build "check".
 #
 check: $(JSL_SCRIPT) $(JSSTYLE)
