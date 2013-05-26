@@ -2,7 +2,7 @@
 var test = require('tap').test,
     uuid = require('node-uuid'),
     util = require('util'),
-    async = require('async'),
+    vasync = require('vasync'),
     Factory = require('wf').Factory,
     WorkflowMorayBackend = require('../lib/workflow-moray-backend');
 
@@ -22,8 +22,9 @@ test('setup', function (t) {
         t.ok(backend.client, 'backend client ok');
         factory = Factory(backend);
         t.ok(factory, 'factory ok');
-        async.forEach(['wf_workflows', 'wf_jobs', 'wf_runners', 'wf_jobs_info'],
-            function (bucket, cb) {
+        vasync.forEachParallel({
+            inputs: ['wf_workflows', 'wf_jobs', 'wf_runners', 'wf_jobs_info'],
+            func: function (bucket, cb) {
                 backend._bucketExists(bucket, function (exists) {
                     if (exists) {
                         return backend.client.delBucket(bucket, function (err) {
@@ -35,13 +36,14 @@ test('setup', function (t) {
                         return cb(null);
                     }
                 });
-            }, function (err) {
-                t.ifError(err, 'Delete buckets error');
-                backend._createBuckets(function (err) {
-                    t.ifError(err, 'Create buckets error');
-                    t.end();
-                });
+            }
+        }, function (err, results) {
+            t.ifError(err, 'Delete buckets error');
+            backend._createBuckets(function (err) {
+                t.ifError(err, 'Create buckets error');
+                t.end();
             });
+        });
     });
 });
 
@@ -467,6 +469,23 @@ test('get workflows', function (t) {
 });
 
 
+test('search workflows by name', function (t) {
+    backend.getWorkflows({name: aWorkflow.name}, function (err, workflows) {
+        t.ifError(err, 'get workflows error');
+        t.ok(workflows, 'workflows ok');
+        t.equal(workflows[0].uuid, aWorkflow.uuid, 'workflow uuid ok');
+        t.ok(util.isArray(workflows[0].chain), 'workflow chain ok');
+        t.ok(util.isArray(workflows[0].onerror), 'workflow onerror ok');
+        backend.getWorkflows({name: 'whatever'}, function (err2, workflows2) {
+            t.ifError(err2, 'get workflows error');
+            t.ok(workflows2, 'workflows ok');
+            t.equal(0, workflows2.length);
+            t.end();
+        });
+    });
+});
+
+
 test('get all jobs', function (t) {
     backend.getJobs(function (err, jobs) {
         t.ifError(err, 'get all jobs error');
@@ -613,8 +632,9 @@ test('get job info', function (t) {
 
 
 test('teardown', function (t) {
-    async.forEach(['wf_workflows', 'wf_jobs', 'wf_runners', 'wf_jobs_info'],
-        function (bucket, cb) {
+    vasync.forEachParallel({
+        inputs: ['wf_workflows', 'wf_jobs', 'wf_runners', 'wf_jobs_info'],
+        func: function (bucket, cb) {
             backend._bucketExists(bucket, function (exists) {
                 if (exists) {
                     return backend.client.delBucket(bucket, function (err) {
@@ -625,11 +645,12 @@ test('teardown', function (t) {
                     return cb(null);
                 }
             });
-        }, function (err) {
+        }
+    }, function (err, res) {
             t.ifError(err, 'Delete buckets error');
             backend.quit(function () {
                 console.timeEnd('Moray Backend');
                 t.end();
             });
-      });
+    });
 });
