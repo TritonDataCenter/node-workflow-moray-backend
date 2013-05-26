@@ -1,14 +1,25 @@
 A backend for [node-workflow](http://kusor.github.com/node-workflow/) built
-over [Moray](http://).
+over [Moray](https://mo.joyent.com/docs/moray/master/).
 
-# Installation
+## Highlights regarding other wf-backends:
 
-    npm install wf-moray-backend
+- Searching `jobs` by `vm_uuid` is faster, given we are using indexed
+`job.target` attribute, which always matches `'(target=*' + vm_uuid + '*)'`
+for machines' jobs.
+- Searching `jobs` on a given time period is also supported using the arguments
+`since`, for jobs created _since_ the given time and `until` for jobs created
+_until_ the specified time. Note both of these attributes values will be
+included into the search, which is made using LDAP filters. Attributes can
+take either `epoch` time values or any valid JavaScript Date string. Note that
+if the given value cannot be transformed into a valid JavaScript Date, the
+argument will be silently discarded.
 
-      ^
-      |__ Not yet :-)
+## Installation
 
-# Usage
+Add `git@git.joyent.com:node-workflow-moray-backend.git` to your wf project
+dependencies.
+
+## Usage
 
 Add the following to the config file of your application using wf:
 
@@ -27,12 +38,14 @@ Where `url` is the url where moray server is listening.
 And that should be it. `wf` REST API and Runners should take care of
 properly loading the module on init.
 
-# Issues
+## Issues
 
-See [node-workflow issues](https://github.com/kusor/node-workflow/issues).
+See [node-workflow issues](https://github.com/kusor/node-workflow/issues) for
+Open Source project issues, and [WORKFLOW](https://devhub.joyent.com/jira/browse/WORKFLOW)
+for Joyent specific issues.
 
 
-# Testing
+## Testing
 
 ### Setup a `moray_test` db from manatee zone:
 
@@ -68,13 +81,65 @@ and listen into a different port:
 
 1. Make sure the `start` method `exec` attribute has the following value:
 
-    exec="node main.js -f etc/config.json -p 2222 &amp;"
+    exec="node main.js -f etc/config.json -p %{moray-test/port} &amp;"
 
 2. Add `MORAY_DB_NAME` to the `start` method environment:
 
     <envvar name="MORAY_DB_NAME" value="moray_test" />
 
-3. Import the new service:
+3. Change the value for the `port` variable:
+
+         <instance name="default" enabled="true">
+          <property_group name="moray-test" type="application">
+            <propval name="port" type="astring" value="2222" />
+           </property_group>
+         </instance>
+
+The manifest diff versus the original will look like:
+
+    [root@... (coal:moray0) /opt/smartdc/moray]# diff -u smf/manifests/moray.xml smf/manifests/moray-test.xml
+    --- smf/manifests/moray.xml     2013-05-26 08:17:06.323940448 +0000
+    +++ smf/manifests/moray-test.xml        2013-05-26 09:04:17.859967502 +0000
+    @@ -1,7 +1,7 @@
+     <?xml version="1.0"?>
+     <!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
+    -<service_bundle type="manifest" name="smartdc-moray">
+    -    <service name="smartdc/application/moray" type="service" version="1">
+    +<service_bundle type="manifest" name="smartdc-moray-test">
+    +    <service name="smartdc/application/moray-test" type="service" version="1">
+
+             <dependency name="network"
+                         grouping="require_all"
+    @@ -27,7 +27,7 @@
+             <exec_method
+                 type="method"
+                 name="start"
+    -            exec="node main.js -f etc/config.json -p %{moray/port} &amp;"
+    +            exec="node main.js -f etc/config.json -p %{moray-test/port} &amp;"
+                 timeout_seconds="30">
+                 <method_context working_directory="/opt/smartdc/moray">
+                     <method_credential user="nobody"
+    @@ -38,6 +38,7 @@
+                                 value="/opt/smartdc/moray/build/node/bin:/opt/local/bin:/usr/bin:/usr/sbin:/bin"/>
+                         <envvar name="LD_PRELOAD_32"
+                                 value="/usr/lib/extendedFILE.so.1" />
+    +                    <envvar name="MORAY_DB_NAME" value="moray_test" />
+                     </method_environment>
+                 </method_context>
+             </exec_method>
+    @@ -51,8 +52,8 @@
+             <property_group name="application" type="application" />
+
+             <instance name="default" enabled="true">
+    -          <property_group name="moray" type="application">
+    -            <propval name="port" type="astring" value="2020" />
+    +          <property_group name="moray-test" type="application">
+    +            <propval name="port" type="astring" value="2222" />
+               </property_group>
+             </instance>
+
+
+4. Finally, import the new service:
 
     svccfg import smf/manifests/moray-test.xml
 
@@ -82,7 +147,7 @@ You should have a new moray instance running at the moray zone on port 2222 now.
 COAL this means your moray URL will be `http://10.99.99.17:2222`.
 
 
-# LICENSE
+## LICENSE
 
 The MIT License (MIT) Copyright (c) 2012 Pedro Palazón Candel
 
