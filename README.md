@@ -85,7 +85,7 @@ workflows by version.
 
 Some search examples:
 
-1. Exact match:
+Exact match:
 
     # A workflow name matches exactly the provided search filter:
     [root@headnode (coal) ~]# sdc-workflow /workflows?name=provision-7.0.6| json -a name
@@ -93,7 +93,7 @@ Some search examples:
     # There isn't a single workflow matching name exactly:
     [root@headnode (coal) ~]# sdc-workflow /workflows?name=provision| json -a name
 
-2. Approximate matches:
+Approximate matches:
 
     # workflow's name begins with provision:
     [root@headnode (coal) ~]# sdc-workflow /workflows?name=provision*| json -a name
