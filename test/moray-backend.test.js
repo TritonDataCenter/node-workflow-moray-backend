@@ -57,7 +57,7 @@ test('ping', function (t) {
 
 test('add a workflow', function (t) {
     factory.workflow({
-        name: 'A workflow',
+        name: 'The workflow name',
         chain: [ {
             name: 'A Task',
             timeout: 30,
@@ -86,7 +86,7 @@ test('add a workflow', function (t) {
 
 test('workflow name must be unique', function (t) {
     factory.workflow({
-        name: 'A workflow',
+        name: 'The workflow name',
         chain: [ {
             name: 'A Task',
             timeout: 30,
