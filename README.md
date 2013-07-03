@@ -151,6 +151,9 @@ for Joyent specific issues.
 
 ## Testing
 
+There is a script at tools/coal-test-env.sh. Just scp into GZ and executing
+it should work. Here is what the script does for reference.
+
 ### Setup a `moray_test` db from manatee zone:
 
     [root@headnode (coal) ~]# sdc-login manatee
@@ -253,7 +256,7 @@ COAL this means your moray URL will be `http://10.99.99.17:2222`.
 
 ## LICENSE
 
-The MIT License (MIT) Copyright (c) 2012 Pedro Palazón Candel
+The MIT License (MIT) Copyright (c) 2013 Pedro Palazón Candel
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
