@@ -171,7 +171,8 @@ it's to say:
                         }
                     },
                     "wf_jobs_info": {}
-                }
+                },
+                "version": 1
             }
         }, ...
     }
@@ -188,6 +189,21 @@ Let's briefly review the `wf_workflows` section on the config fragment above:
   decoded using `JSON.parse` when it's retrieved from moray.
 - The field `unique_string` will be added to moray as an `unique` index.
 - The field `indexed_string` will be added to moray as a `non unique` index.
+
+Couple important things to note:
+
+- If you add new fields for an existing setup, you need to change the version
+  number. Otherwise, the moray buckets will not get updated with the new
+  fields. Use a plain integer number for versioning.
+- If you want to be able to add the extra fields to either `jobs` or
+  `workflows` using the API (and you want it), you must also add these to the
+  api config section as follows:
+
+    "api": {
+        "port": 8080,
+        "wf_extra_params": ["custom_object", "unique_string", "indexed_string"],
+        "job_extra_params": ["vm_uuid", "server_uuid"]
+    },
 
 
 ## Installation
