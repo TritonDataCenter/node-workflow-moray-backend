@@ -1,4 +1,4 @@
-// Copyright (c) 2012, Joyent, Inc. All rights reserved.
+// Copyright (c) 2013, Joyent, Inc. All rights reserved.
 var test = require('tap').test,
     uuid = require('node-uuid'),
     util = require('util'),
@@ -23,7 +23,8 @@ test('setup', function (t) {
         factory = Factory(backend);
         t.ok(factory, 'factory ok');
         vasync.forEachParallel({
-            inputs: ['wf_workflows', 'wf_jobs', 'wf_runners', 'wf_jobs_info'],
+            inputs: ['wf_workflows', 'wf_jobs', 'wf_runners', 'wf_jobs_info',
+                'wf_locked_targets'],
             func: function (bucket, cb) {
                 backend._bucketExists(bucket, function (exists) {
                     if (exists) {
@@ -45,6 +46,20 @@ test('setup', function (t) {
             });
         });
     });
+});
+
+
+test('buckets created', function (t) {
+    var buckets = ['wf_workflows', 'wf_jobs', 'wf_runners', 'wf_jobs_info',
+        'wf_locked_targets'];
+    buckets.forEach(function (bu) {
+        backend.client.getBucket(bu, function (err, bucket) {
+            t.ifError(err);
+            t.ok(bucket);
+            // console.log(util.inspect(bucket, false, 8, true));
+        });
+    });
+    t.end();
 });
 
 
@@ -364,7 +379,7 @@ test('finish job', function (t) {
             {result: 'OK', error: ''},
             {result: 'OK', error: ''}
         ], 'finish job results');
-        t.ok(!job.runner_id);
+        t.ok(!job.runner_id, 'finished job runner_id');
         t.equal(job.execution, 'succeeded', 'finished job status');
         aJob = job;
         t.end();

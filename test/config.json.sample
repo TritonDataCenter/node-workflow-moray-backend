@@ -3,7 +3,23 @@
         "module": "../lib/workflow-moray-backend",
         "opts": {
             "url": "http://10.99.99.17:2222",
-            "connectTimeout": 1000
+            "connectTimeout": 1000,
+            "extra_fields": {
+                "wf_workflows": {},
+                "wf_jobs": {
+                    "vm_uuid": {
+                        "type": "string",
+                        "index": true,
+                        "unique": false
+                    },
+                    "server_uuid": {
+                        "type": "string",
+                        "index": true,
+                        "unique": false
+                    }
+                },
+                "wf_jobs_info": {}
+            }
         }
     },
     "api": {

@@ -118,6 +118,78 @@ Approximate matches:
     delete-snapshot-7.0.0
     remove-nics-7.0.0
 
+## Extra fields
+
+Starting with version `0.9.5` is possible to add custom fields to the buckets
+`wf_jobs`, `wf_workflows` and `wf_jobs_info`. While this was theoretically
+possible in the past for latest two buckets, it wasn't for `wf_jobs`.
+Additionally, the possible fields were restricted to the moray supported
+indexes.
+
+Now it's also possible to add `object` types, which will be stored into moray
+as strings, and properly encoded/decoded when saved/retrieved from the backend.
+This change has been introduced to automatically deal with JSON.stringified
+objects and arrays.
+
+Fields definition must be placed into configuration file, right under:
+
+    backend.opts.extra_fields
+
+it's to say:
+
+    {
+        "backend": {
+            "module": "../lib/workflow-moray-backend",
+            "opts": {
+                "url": "http://10.99.99.17:2222",
+                "connectTimeout": 1000,
+                "extra_fields": {
+                    "wf_workflows": {
+                        "custom_object": {
+                            "type": "object",
+                            "index": false,
+                        },
+                        "unique_string": {
+                            "type": "string",
+                            "unique": true
+                        }
+                        "indexed_string": {
+                            "type": "string",
+                            "index": true
+                        }
+                    },
+                    "wf_jobs": {
+                        "vm_uuid": {
+                            "type": "string",
+                            "index": true,
+                            "unique": false
+                        },
+                        "server_uuid": {
+                            "type": "string",
+                            "index": true,
+                            "unique": false
+                        }
+                    },
+                    "wf_jobs_info": {}
+                }
+            }
+        }, ...
+    }
+
+
+Let's briefly review the `wf_workflows` section on the config fragment above:
+
+- The field `custom_object` will not be added to moray bucket as an index.
+  (`index` was set to `false`). Indeed, this would be the recommended way to
+  proceed for arbitrary length complex objects: do not index them. If you need
+  to search for specific properties, add extra fields with those properties.
+  Anyway, when a JavaScript `Array` or `Object` value is given to this field,
+  it'll be encoded using `JSON.stringify` before it's saved into moray and
+  decoded using `JSON.parse` when it's retrieved from moray.
+- The field `unique_string` will be added to moray as an `unique` index.
+- The field `indexed_string` will be added to moray as a `non unique` index.
+
+
 ## Installation
 
 Add `git@git.joyent.com:node-workflow-moray-backend.git` to your wf project
@@ -132,7 +204,8 @@ Add the following to the config file of your application using wf:
         "module": "wf-moray-backend",
         "opts": {
           "url": "http://127.0.0.1:8080",
-          "connectTimeout": 1000
+          "connectTimeout": 1000,
+          "extra_fields": {}
         }
       }
     }
@@ -152,7 +225,16 @@ for Joyent specific issues.
 ## Testing
 
 There is a script at tools/coal-test-env.sh. Just scp into GZ and executing
-it should work. Here is what the script does for reference.
+it should work. What the script does is below for reference.
+
+Then, to run the tests either:
+
+    make test
+
+or for extra verbosity:
+
+    node test/moray-backend.test.js 2>&1 | bunyan
+    node test/buckets-definition.test.js 2>&1 | bunyan
 
 ### Setup a `moray_test` db from manatee zone:
 
