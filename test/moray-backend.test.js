@@ -572,6 +572,15 @@ test('get some jobs searching by params', function (t) {
 });
 
 
+test('get jobs searching by name', function (t) {
+    backend.getJobs({name: aWorkflow.name}, function (err, jobs) {
+        t.ifError(err, 'get jobs by name error');
+        t.ok(jobs, 'all jobs by name ok');
+        t.equal(jobs.length, 3);
+        t.end();
+    });
+});
+
 test('get succeeded jobs', function (t) {
     backend.getJobs({execution: 'succeeded'}, function (err, jobs) {
         t.ifError(err, 'get succeeded jobs error');
