@@ -1,6 +1,6 @@
 // Copyright (c) 2013, Joyent, Inc. All rights reserved.
 var test = require('tap').test,
-    uuid = require('node-uuid'),
+    uuid = require('libuuid'),
     util = require('util'),
     vasync = require('vasync'),
     Factory = require('wf').Factory,
@@ -132,7 +132,7 @@ test('get workflow', function (t) {
         t.ifError(err, 'get workflow error');
         t.ok(workflow, 'get workflow ok');
         t.equivalent(workflow, aWorkflow, 'workflow object equivalent');
-        backend.getWorkflow(uuid(), function (err, workflow) {
+        backend.getWorkflow(uuid.create(), function (err, workflow) {
             t.equal(typeof (err), 'object', 'err is an object');
             t.equal(err.name, 'BackendResourceNotFoundError', 'err name');
             t.ok(err.message.match(/uuid/gi), 'unexisting workflow error');
@@ -630,7 +630,7 @@ test('get queued jobs', function (t) {
 test('add job info', function (t) {
     t.test('to unexisting job', function (t) {
         backend.addInfo(
-            uuid(),
+            uuid.create(),
             {'10%': 'Task completed step one'},
             function (err) {
                 t.ok(err);
@@ -664,7 +664,7 @@ test('add job info', function (t) {
 test('get job info', function (t) {
     t.test('from unexisting job', function (t) {
         backend.getInfo(
-            uuid(),
+            uuid.create(),
             function (err, info) {
                 t.ok(err);
                 t.equal(typeof (err), 'object');
