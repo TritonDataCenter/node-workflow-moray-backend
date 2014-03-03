@@ -16,6 +16,11 @@ take either `epoch` time values or any valid JavaScript Date string. Note that
 if the given value cannot be transformed into a valid JavaScript Date, the
 argument will be silently discarded. (Since WORKFLOW-104).
 
+Please, remember that JavaScript dates must be specified in milliseconds.
+Therefore, if you are passing _"time since epoch"_ values, those must be
+specified using milliseconds. If you are buiding your date objects, just
+call `getTime()` method and you're set.
+
 Examples:
 
 The following is a very simple output of a system with very few jobs to help
