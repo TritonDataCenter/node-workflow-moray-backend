@@ -20,7 +20,7 @@
     "bunyan": "0.20.0",
     "moray": "git+ssh://git@git.joyent.com:node-moray.git#72b53a",
     "node-uuid": "1.4.0",
-    "wf": "git://github.com/kusor/node-workflow.git#703cc3",
+    "wf": "git://github.com/kusor/node-workflow.git#4640f7",
     "vasync": "1.3.3"
   },
   "devDependencies": {
