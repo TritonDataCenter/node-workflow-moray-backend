@@ -4,10 +4,10 @@
   "description": "A backend for wf built over Moray",
   "version": "0.10.0",
   "private": true,
-  "homepage": "https://github.com/kusor/node-workflow-moray-backend",
+  "homepage": "https://github.com/joyent/node-workflow-moray-backend",
   "repository": {
     "type": "git",
-    "url": "git@github.com:kusor/node-workflow-moray-backend.git"
+    "url": "git@github.com:joyent/node-workflow-moray-backend.git"
   },
   "main": "lib/workflow-moray-backend.js",
   "scripts": {
@@ -25,5 +25,6 @@
   },
   "devDependencies": {
     "tap": "~0.3"
-  }
+  },
+  "license": "MPL-2.0"
 }

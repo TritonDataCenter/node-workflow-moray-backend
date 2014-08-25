@@ -1,4 +1,13 @@
-// Copyright (c) 2013, Joyent, Inc. All rights reserved.
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+/*
+ * Copyright (c) 2014, Joyent, Inc.
+ */
+
 var test = require('tap').test,
     uuid = require('node-uuid'),
     util = require('util'),
@@ -697,6 +706,43 @@ test('get job info', function (t) {
             });
     });
     t.end();
+});
+
+
+test('WORKFLOW-180: job failed with error object', function (t) {
+    factory.workflow({
+        name: 'The workflow name',
+        chain: [ {
+            name: 'A Task',
+            timeout: 30,
+            retry: 3,
+            body: function (job, cb) {
+                return cb(new Error('job failed'));
+            }
+        }],
+        timeout: 180
+    }, function (err, workflow) {
+        t.ifError(err, 'add workflow error');
+        t.ok(workflow, 'add workflow ok');
+        factory.job({
+            workflow: workflow.uuid,
+            target: '/foo/baz',
+            params: {
+                foo: 'foo',
+                chicken: 'egg'
+            }
+        }, function (err2, aJob) {
+            t.ifError(err2, 'create job error');
+            t.ok(aJob, 'create job ok');
+            t.equal(aJob.execution, 'queued');
+            backend.runJob(aJob.uuid, runnerId, function (err3, job) {
+                t.ifError(err3, 'run job error');
+                t.equal(job.runner_id, runnerId, 'run job runner');
+                t.equal(job.execution, 'running', 'run job status');
+                t.end();
+            });
+        });
+    });
 });
 
 
