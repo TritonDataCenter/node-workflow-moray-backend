@@ -1,5 +1,17 @@
-A backend for [node-workflow](http://kusor.github.com/node-workflow/) built
-over [Moray](https://mo.joyent.com/docs/moray/master/).
+<!--
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<!--
+    Copyright (c) 2014, Joyent, Inc.
+-->
+
+# node-workflow-moray-backend
+
+A backend for [node-workflow](https://github.com/kusor/node-workflow) built
+over [Moray](https://github.com/joyent/moray).
 
 ## Highlights regarding other wf-backends:
 
@@ -213,7 +225,7 @@ Couple important things to note:
 
 ## Installation
 
-Add `git@git.joyent.com:node-workflow-moray-backend.git` to your wf project
+Add `git@github.com:joyent/node-workflow-moray-backend.git` to your wf project
 dependencies.
 
 ## Usage
@@ -239,8 +251,8 @@ properly loading the module on init.
 ## Issues
 
 See [node-workflow issues](https://github.com/kusor/node-workflow/issues) for
-Open Source project issues, and [WORKFLOW](https://devhub.joyent.com/jira/browse/WORKFLOW)
-for Joyent specific issues.
+general workflow issues, and visit [SDC](http://github.com/joyent/sdc) or
+[Manta](http://github.com/joyent/manta) specific issues.
 
 
 ## Testing
