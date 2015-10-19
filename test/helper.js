@@ -21,6 +21,20 @@ module.exports = {
         if (!config) {
             config = JSON.parse(fs.readFileSync(cfg_file, 'utf-8'));
         }
+        config.extra_fields = {
+            wf_jobs: {
+                foo: {
+                    type: 'string',
+                    index: true,
+                    unique: false
+                },
+                bar: {
+                    type: 'string',
+                    index: true,
+                    unique: false
+                }
+            }
+        };
         return config;
     }
 };
