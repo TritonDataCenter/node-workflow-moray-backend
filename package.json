@@ -17,11 +17,11 @@
     "node": ">=0.8"
   },
   "dependencies": {
-    "bunyan": "0.23.1",
-    "moray": "git://github.com/joyent/node-moray.git#b84ef0e",
-    "node-uuid": "1.4.0",
-    "wf": "git://github.com/kusor/node-workflow.git#5cdc62",
-    "vasync": "1.6.1",
+    "bunyan": "1.8.1",
+    "moray": "2.0.1",
+    "uuid": "2.0.2",
+    "wf": "git+https://github.com/joyent/node-workflow.git#2597dd58a0289729b75af61eafd8aeae3cbfd382",
+    "vasync": "1.6.3",
     "backoff": "2.4.1"
   },
   "devDependencies": {
