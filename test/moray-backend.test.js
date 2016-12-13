@@ -5,11 +5,11 @@
  */
 
 /*
- * Copyright (c) 2014, Joyent, Inc.
+ * Copyright (c) 2016, Joyent, Inc.
  */
 
 var test = require('tap').test,
-    uuid = require('node-uuid'),
+    uuid = require('uuid'),
     util = require('util'),
     vasync = require('vasync'),
     Factory = require('wf').Factory,
@@ -119,7 +119,7 @@ test('workflow name must be unique', function (t) {
                 return cb(null);
             },
             modules:  {
-                'uuid': 'node-uuid'
+                'uuid': 'uuid'
             }
         }],
         timeout: 180,
