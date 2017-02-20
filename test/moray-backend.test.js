@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2014, Joyent, Inc.
+ * Copyright 2017 Joyent, Inc.
  */
 
 var test = require('tap').test,
@@ -65,7 +65,6 @@ test('buckets created', function (t) {
         backend.client.getBucket(bu, function (err, bucket) {
             t.ifError(err);
             t.ok(bucket);
-            // console.log(util.inspect(bucket, false, 8, true));
         });
     });
     t.end();
@@ -173,8 +172,8 @@ test('create job', function (t) {
     factory.job({
         workflow: aWorkflow.uuid,
         target: '/foo/bar',
+        foo: 'bar',
         params: {
-            foo: 'bar',
             chicken: 'arise!'
         },
         locks: 'something$'
@@ -203,8 +202,8 @@ test('duplicated job target', function (t) {
     factory.job({
         workflow: aWorkflow.uuid,
         target: '/foo/bar',
+        foo: 'bar',
         params: {
-            foo: 'bar',
             chicken: 'arise!'
         }
     }, function (err, job) {
@@ -218,8 +217,8 @@ test('locked job target', function (t) {
     factory.job({
         workflow: aWorkflow.uuid,
         target: '/foo/something',
+        foo: 'bar',
         params: {
-            foo: 'bar',
             chicken: 'arise!'
         }
     }, function (err, job) {
@@ -234,8 +233,8 @@ test('job with different params', function (t) {
     factory.job({
         workflow: aWorkflow.uuid,
         target: '/foo/bar',
+        foo: 'bar',
         params: {
-            foo: 'bar',
             chicken: 'egg'
         }
     }, function (err, job) {
@@ -401,8 +400,8 @@ test('unlocked job target', function (t) {
     factory.job({
         workflow: aWorkflow.uuid,
         target: '/foo/something',
+        foo: 'bar',
         params: {
-            foo: 'bar',
             chicken: 'arise!'
         }
     }, function (err, job) {
@@ -582,11 +581,9 @@ test('get all jobs searching by params', function (t) {
 });
 
 
-test('get some jobs searching by params', function (t) {
+test('get all jobs searching by invalid params', function (t) {
     backend.getJobs({foo: 'bar', chicken: 'arise!'}, function (err, jobs) {
-        t.ifError(err, 'get all jobs error');
-        t.ok(jobs, 'jobs ok');
-        t.equal(jobs.length, 2);
+        t.ok(err, 'get jobs with unexpected params');
         t.end();
     });
 });
@@ -727,8 +724,8 @@ test('WORKFLOW-180: job failed with error object', function (t) {
         factory.job({
             workflow: workflow.uuid,
             target: '/foo/baz',
+            foo: 'foo',
             params: {
-                foo: 'foo',
                 chicken: 'egg'
             }
         }, function (err2, aJob) {

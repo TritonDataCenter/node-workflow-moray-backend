@@ -5,7 +5,7 @@
 -->
 
 <!--
-    Copyright (c) 2016, Joyent, Inc.
+    Copyright 2017 Joyent, Inc.
 -->
 
 # node-workflow-moray-backend
@@ -256,7 +256,7 @@ properly loading the module on init.
 
 ## Issues
 
-See [node-workflow issues](https://github.com/kusor/node-workflow/issues) for
+See [node-workflow issues](https://github.com/joyent/node-workflow/issues) for
 general workflow issues, and visit [SDC](http://github.com/joyent/sdc) or
 [Manta](http://github.com/joyent/manta) specific issues.
 
@@ -286,7 +286,8 @@ or for extra verbosity:
         pre text NOT NULL,
         post text NOT NULL,
         options text,
-        mtime timestamp without time zone DEFAULT now() NOT NULL
+        mtime timestamp without time zone DEFAULT now() NOT NULL,
+        reindex_active text
     );
 
 
@@ -295,7 +296,7 @@ or for extra verbosity:
     [root@headnode (coal) ~] sdc-login moray
     [root@... (coal:moray0) ~]# cd /opt/smartdc/moray/
     [root@... (coal:moray0) /opt/smartdc/moray]# cp etc/config.json etc/config.test.json
-    [root@... (coal:moray0) /opt/smartdc/moray]# cp smf/manifests/moray.xml smf/manifests/moray-test.xml
+    [root@... (coal:moray0) /opt/smartdc/moray]# cp smf/manifests/moray-2021.xml smf/manifests/moray-test.xml
 
 Then, you need to modify SMF to make this moray test instance to use our `moray_test` db
 and listen into a different port:
@@ -377,7 +378,7 @@ COAL this means your moray URL will be `http://10.99.99.17:2222`.
 
 ## LICENSE
 
-Copyright (c) 2014, Joyent, Inc.
+Copyright 2017 Joyent, Inc.
 
 This Source Code Form is subject to the terms of the Mozilla Public
 License, v. 2.0. If a copy of the MPL was not distributed with this

@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2014, Joyent, Inc.
+ * Copyright (c) 2017 Joyent, Inc.
  */
 
 var path = require('path'),
@@ -21,20 +21,19 @@ module.exports = {
         if (!config) {
             config = JSON.parse(fs.readFileSync(cfg_file, 'utf-8'));
         }
-        config.extra_fields = {
-            wf_jobs: {
-                foo: {
-                    type: 'string',
-                    index: true,
-                    unique: false
-                },
-                bar: {
-                    type: 'string',
-                    index: true,
-                    unique: false
-                }
-            }
+        config.backend.opts.extra_fields.wf_jobs.foo = {
+            type: 'string',
+            index: true,
+            unique: false
         };
+        config.backend.opts.extra_fields.wf_jobs.bar = {
+            type: 'string',
+            index: true,
+            unique: false
+        };
+
+        config.api.job_extra_params.push('foo');
+        config.api.job_extra_params.push('bar');
         return config;
     }
 };
