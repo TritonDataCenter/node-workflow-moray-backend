@@ -164,8 +164,12 @@ it's to say:
         "backend": {
             "module": "../lib/workflow-moray-backend",
             "opts": {
-                "url": "http://10.99.99.17:2222",
-                "connectTimeout": 1000,
+                "moray": {
+                    "srvDomain": "moray.coal.joyent.us",
+                    "cueballOptions": {
+                        "resolvers": [ "binder.coal.joyent.us" ]
+                    }
+                }
                 "extra_fields": {
                     "wf_workflows": {
                         "custom_object": {
@@ -242,8 +246,12 @@ Add the following to the config file of your application using wf:
       "backend": {
         "module": "wf-moray-backend",
         "opts": {
-          "url": "http://127.0.0.1:8080",
-          "connectTimeout": 1000,
+              "moray": {
+                    "srvDomain": "moray.coal.joyent.us",
+                    "cueballOptions": {
+                        "resolvers": [ "binder.coal.joyent.us" ]
+                    }
+              },
           "extra_fields": {}
         }
       }

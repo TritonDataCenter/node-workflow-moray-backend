@@ -2,8 +2,9 @@
     "backend": {
         "module": "../lib/workflow-moray-backend",
         "opts": {
-            "url": "http://10.99.99.17:2222",
-            "connectTimeout": 1000,
+            "moray": {
+                "url": "http://10.99.99.17:2222"
+            },
             "extra_fields": {
                 "wf_workflows": {},
                 "wf_jobs": {
