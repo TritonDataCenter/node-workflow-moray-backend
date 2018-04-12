@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2017 Joyent, Inc.
+ * Copyright (c) 2018 Joyent, Inc.
  */
 
 var path = require('path'),
@@ -32,8 +32,13 @@ module.exports = {
             unique: false
         };
 
+        config.backend.opts.metricsManager = {
+            collectMetrics: function () {}
+        };
+
         config.api.job_extra_params.push('foo');
         config.api.job_extra_params.push('bar');
+
         return config;
     }
 };
