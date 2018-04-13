@@ -3,7 +3,6 @@
   "name": "wf-moray-backend",
   "description": "A backend for wf built over Moray",
   "version": "1.2.0",
-  "private": true,
   "homepage": "https://github.com/joyent/node-workflow-moray-backend",
   "repository": {
     "type": "git",
