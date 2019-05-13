@@ -19,7 +19,7 @@
     "assert-plus": "1.0.0",
     "bunyan": "1.8.1",
     "jsprim": "^1.3.1",
-    "moray": "3.8.0",
+    "moray": "git+https://github.com/joyent/node-moray.git#rfd-35-cls",
     "uuid": "3.0.1",
     "vasync": "1.6.4",
     "verror": "1.10.0",
